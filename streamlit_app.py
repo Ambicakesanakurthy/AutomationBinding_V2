@@ -70,13 +70,14 @@ sheet_name = None
 
 if excel_file is not None:
     try:
-     #reads sheet names from excel file
+     # Reads sheet names from excel file
      xls = pd.ExcelFile(excel_file)
-     #list of sheet names
+     # List of sheet names
      sheet_names = xls.sheet_names    
+     # Creates the Dropdown menu
      sheet_name = st.selectbox("select a sheet from the excel file", sheet_names)
     except Exception as e:
-     st.error(f"Error reading excel sheet names: {e}")
+     st.error(f"Error in Reading Excel Sheet Names: {e}")
      
 # Button and logic
 if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
@@ -88,13 +89,20 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         # Read Excel
         df = pd.read_excel(excel_file, sheet_name=sheet_name)
         label_to_bind = {}
+        seen_labels = {}
+     
  
-        for _, row in df.iterrows():
+        for idx, row in df.iterrows():
             nomenclature = str(row.get("Nomenclature", "")).strip()
             for col in ["First Label", "Second Label", "Third Label"]:
                 label = str(row.get(col, "")).strip()
                 if label:
+                    if label in seen_labels:
+                        prev_row = seen_labels[label]
+                        raise ValueError(f"Duplicate label '{label}' found at row {idx + 2} (also present at row {prev_row + 2}). Please correct the Excel file.")
                     label_to_bind[label] = nomenclature
+                    #store row index of first occurrence
+                    seen_labels[label] = idx 
  
         # Replace in TGML
         in_group = False
