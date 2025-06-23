@@ -96,29 +96,30 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
             for col in ["First Label", "Second Label", "Third Label"]:
                 label = str(row.get(col, "")).strip()
                 if label:
-                    if label in seen_labels:
-                        prev_row = seen_labels[label] + 2
+                    label_key = label.lower()
+                    if label_key in seen_labels:
+                        prev_row = seen_labels[label_key] + 2
                         curr_row = idx + 2
                         raise ValueError(
-                         f"Duplicate label '{label}' found at row {idx + 2} (also present at row {prev_row + 2}). Please correct the Excel file."
+                         f"Duplicate label '{label}' found at row {curr_row} (also present at row {prev_row}). Please correct the Excel file."
                         )
-                    label_to_bind[label] = nomenclature
+                    label_to_bind[label_key] = nomenclature
                     #store row index of first occurrence
-                    seen_labels[label] = idx 
+                    seen_labels[label_key] = idx 
  
         # Replace in TGML
         in_group = False
         current_text = None
         inside_target_text = False
  
-        for elem in root.iter():
+        for elem in root.iter(): you
             if elem.tag == "Group":
                 in_group = True
             elif elem.tag == "Text" and in_group:
                 current_text = elem.attrib.get("Name", "").strip()
-                inside_target_text = current_text in label_to_bind
+                inside_target_text = current_text.lower() in label_to_bind
             elif elem.tag == "Bind" and in_group and inside_target_text:
-                new_bind = label_to_bind.get(current_text)
+                new_bind = label_to_bind.get(current_text.lower())
                 elem.set("Name", new_bind)
             elif elem.tag == "Text" and inside_target_text:
                 inside_target_text = False
