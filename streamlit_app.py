@@ -88,6 +88,7 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
  
         # Read Excel
         df = pd.read_excel(excel_file, sheet_name=sheet_name)
+     
         label_to_bind = {}
         seen_labels = {}
      
@@ -101,7 +102,7 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                         prev_row = seen_labels[label_key] + 2
                         curr_row = idx + 2
                         raise ValueError(
-                         f"Duplicate label '{label}' found at row {curr_row} (also present at row {prev_row}). Please correct the Excel file."
+                         f"Duplicate label '{label}' found at row {curr_row} (also present at row {prev_row})."
                         )
                     label_to_bind[label_key] = nomenclature
                     #store row index of first occurrence
@@ -112,7 +113,7 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         current_text = None
         inside_target_text = False
  
-        for elem in root.iter(): you
+        for elem in root.iter(): 
             if elem.tag == "Group":
                 in_group = True
             elif elem.tag == "Text" and in_group:
@@ -120,7 +121,8 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                 inside_target_text = current_text.lower() in label_to_bind
             elif elem.tag == "Bind" and in_group and inside_target_text:
                 new_bind = label_to_bind.get(current_text.lower())
-                elem.set("Name", new_bind)
+                if new_bind:
+                    elem.set("Name", new_bind)
             elif elem.tag == "Text" and inside_target_text:
                 inside_target_text = False
  
