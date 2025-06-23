@@ -91,15 +91,17 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         label_to_bind = {}
         seen_labels = {}
      
- 
         for idx, row in df.iterrows():
             nomenclature = str(row.get("Nomenclature", "")).strip()
             for col in ["First Label", "Second Label", "Third Label"]:
                 label = str(row.get(col, "")).strip()
                 if label:
                     if label in seen_labels:
-                        prev_row = seen_labels[label]
-                        raise ValueError(f"Duplicate label '{label}' found at row {idx + 2} (also present at row {prev_row + 2}). Please correct the Excel file.")
+                        prev_row = seen_labels[label] + 2
+                        curr_row = idx + 2
+                        raise ValueError(
+                         f"Duplicate label '{label}' found at row {idx + 2} (also present at row {prev_row + 2}). Please correct the Excel file."
+                        )
                     label_to_bind[label] = nomenclature
                     #store row index of first occurrence
                     seen_labels[label] = idx 
