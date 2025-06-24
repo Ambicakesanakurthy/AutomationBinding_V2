@@ -49,7 +49,7 @@ if excel_file:
         xls = pd.ExcelFile(excel_file)
         sheet_name = st.selectbox("Select Sheet Name", xls.sheet_names)
     except Exception as e:
-        st.error(f"❌ Error reading Excel file: {e}")
+        st.error(f"Error reading Excel file: {e}")
  
 # Run logic
 if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
@@ -75,7 +75,7 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                         prev_row = seen_labels[label_key] + 2
                         curr_row = idx + 2
                         raise ValueError(
-                            f"❌ Duplicate label '{label}' found at row {curr_row} (already exists at row {prev_row})."
+                            f"Duplicate label '{label}' found at row {curr_row} (already exists at row {prev_row})."
                         )
                     label_to_bind[label_key] = nomenclature
                     seen_labels[label_key] = idx
@@ -103,11 +103,11 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         tree.write(output_file, encoding="utf-8", xml_declaration=True)
  
         with open(output_file, "rb") as f:
-            st.download_button("📥 Download Updated TGML", f, file_name=output_file)
+            st.download_button("Download Updated TGML", f, file_name=output_file)
  
-        st.success("✅ Binding completed successfully!")
+        st.success("Binding completed successfully!")
  
     except Exception as e:
-        st.error(f"❌ Error: {e}")
+        st.error(f"Error: {e}")
  
 st.markdown('</div>', unsafe_allow_html=True)
