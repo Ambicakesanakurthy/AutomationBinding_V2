@@ -11,30 +11,22 @@ st.set_page_config(page_title="Automatic Binding Tool", layout="centered")
 st.markdown("""
     <style>
     /* set the full page background color */
-    .body {
+    body {
         background-color: #0070AD;
     }
     /* style the content box */
     main {
          color: pink;
      }
-
      /* title styling */
     h1 {
         text-align: center;
         color: #114488;
-        font-size: 32px;
-    }
-    p {
-       text-align: center;
-       margin-bottom: 20px;
-       font-size: 14px;
-       color: black;
      }
     /* sub title styling*/
-    sub {
+   .sub {
         text-align: center;
-        color: pink;
+        color: #7f8c8d;
         margin-bottom: 30px;
         font-size: 16px;
     }
@@ -68,7 +60,7 @@ tgml_file = st.file_uploader("TGML File", type="tgml")
 excel_file = st.file_uploader("Excel File", type="xlsx")
 sheet_name = None
 
-if excel_file is not None:
+if excel_file:
     try:
      # Reads sheet names from excel file
      xls = pd.ExcelFile(excel_file)
@@ -89,13 +81,23 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         # Read Excel
         df = pd.read_excel(excel_file, sheet_name=sheet_name)
         label_to_bind = {}
- 
-        for _, row in df.iterrows():
+        seen_labels = {}
+
+        # Normalize and check duplicates
+        for idx, row in df.iterrows():
             nomenclature = str(row.get("Nomenclature", "")).strip()
             for col in ["First Label", "Second Label", "Third Label"]:
                 label = str(row.get(col, "")).strip()
                 if label:
-                    label_to_bind[label] = nomenclature
+                    label_key = label.lower()
+                    if label_key in seen_labels:
+                        prev_row = seen_labels[label_key] + 2
+                        curr_row = idx + 2
+                        raise ValueError(
+                           f"Duplicate label '{label}' found at row {curr_row} (already present at row {prev_row})."
+                        )
+                    label_to_bind[label_key] = nomenclature
+                    seen_labels[label_key] = idx
  
         # Replace in TGML
         in_group = False
