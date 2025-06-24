@@ -77,32 +77,22 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         # Parse XML
         tree = ET.parse(tgml_file)
         root = tree.getroot()
- 
-        # Read Excel
+
         df = pd.read_excel(excel_file, sheet_name=sheet_name)
         label_to_bind = {}
-        seen_labels = {}
-
-        # Normalize and check duplicates
-        for idx, row in df.iterrows():
+ 
+        for _, row in df.iterrows():
             nomenclature = str(row.get("Nomenclature", "")).strip()
             for col in ["First Label", "Second Label", "Third Label"]:
                 label = str(row.get(col, "")).strip()
                 if label:
-                    label_key = label.lower()
-                    if label_key in seen_labels:
-                        prev_row = seen_labels[label_key] + 2
-                        curr_row = idx + 2
-                        raise ValueError(
-                           f"Duplicate label '{label}' found at row {curr_row} (already present at row {prev_row})."
-                        )
-                    label_to_bind[label_key] = nomenclature
-                    seen_labels[label_key] = idx
+                    label_to_bind[label] = nomenclature
  
         # Replace in TGML
         in_group = False
         current_text = None
         inside_target_text = False
+                
  
         for elem in root.iter():
             if elem.tag == "Group":
