@@ -107,9 +107,9 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                 in_group = True
             elif elem.tag == "Text" and in_group:
                 current_text = elem.attrib.get("Name", "").strip()
-                inside_target_text = current_text in label_to_bind
+                inside_target_text = current_text.lower() in label_to_bind
             elif elem.tag == "Bind" and in_group and inside_target_text:
-                new_bind = label_to_bind.get(current_text)
+                new_bind = label_to_bind.get(current_text.lower())
                 elem.set("Name", new_bind)
             elif elem.tag == "Text" and inside_target_text:
                 inside_target_text = False
