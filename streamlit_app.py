@@ -1,25 +1,44 @@
-import streamlit as st
-import pandas as pd
-import xml.etree.ElementTree as ET
- 
-# Page configuration
+#Import required libraries
+import streamlit as st     # For creating web UI
+import pandas as pd        # For reading excel file
+import xml.etree.ElementTree as ET   # For parsing and editing TGML
+from io import BytesIO
+
+# Set title on browser tab and center-align the layout
 st.set_page_config(page_title="Automatic Binding Tool", layout="centered")
  
-# Custom CSS styling
+# Add custom CSS for styling the background and form
 st.markdown("""
     <style>
-    body {
-        background-color: #2980b9;
+    /* set the full page background color */
+    .body {
+        background-color: #0070AD;
     }
+    /* style the content box */
+    main {
+         color: pink;
+     }
+
+     /* title styling */
     h1 {
         text-align: center;
-        color: #2c3e50;
+        color: #114488;
+        font-size: 32px;
     }
-    .sub {
+    p {
+       text-align: center;
+       margin-bottom: 20px;
+       font-size: 14px;
+       color: black;
+     }
+    /* sub title styling*/
+    sub {
         text-align: center;
-        color: #7f8c8d;
+        color: pink;
         margin-bottom: 30px;
+        font-size: 16px;
     }
+    /* button styling */
     .stButton>button {
         background-color: #1abc9c;
         color: white;
@@ -27,58 +46,59 @@ st.markdown("""
         border-radius: 8px;
         padding: 10px 24px;
     }
+    /* Hover effect for buttn=on */
     .stButton>button:hover {
         background-color: #16a085;
+    }
+    block-container {
+        background-color: #0070AD !important;
     }
     </style>
 """, unsafe_allow_html=True)
  
-# App header
+# Add title and description
 st.markdown('<div class="main">', unsafe_allow_html=True)
-st.markdown('<h1>Automatic Binding Tool</h1>', unsafe_allow_html=True)
+#title of the app
+st.markdown('<h1>TGML Binding Tool</h1>', unsafe_allow_html=True)
+# sub text with instreuctions
 st.markdown('<p class="sub">Upload TGML & Excel File to Update Bindings</p>', unsafe_allow_html=True)
  
-# File uploaders
-tgml_file = st.file_uploader("TGML File", type="tgml")
+# File uploaders and input
+tgml_file = st.file_uploader("TGML File", type=["tgml", "xml"])
 excel_file = st.file_uploader("Excel File", type="xlsx")
 sheet_name = None
- 
-# Extract sheet names from Excel
+
 if excel_file:
     try:
-        xls = pd.ExcelFile(excel_file)
-        sheet_name = st.selectbox("Select Sheet Name", xls.sheet_names)
+     # Reads sheet names from excel file
+     xls = pd.ExcelFile(excel_file)
+     # List of sheet names
+     sheet_names = xls.sheet_names    
+     # Creates the Dropdown menu
+     sheet_name = st.selectbox("select a sheet from the excel file", sheet_names)
     except Exception as e:
-        st.error(f"Error reading Excel file: {e}")
+     st.error(f"Error in Reading Excel Sheet Names: {e}")
+     
  
-# Run logic
+# Button and logic
 if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
     try:
-        # Load XML
+        # Parse XML
         tree = ET.parse(tgml_file)
         root = tree.getroot()
  
-        # Load Excel
+        # Read Excel
         df = pd.read_excel(excel_file, sheet_name=sheet_name)
- 
         label_to_bind = {}
-        seen_labels = {}
  
-        # Check for duplicates (case-insensitive)
-        for idx, row in df.iterrows():
+        for _, row in df.iterrows():
             nomenclature = str(row.get("Nomenclature", "")).strip()
             for col in ["First Label", "Second Label", "Third Label"]:
                 label = str(row.get(col, "")).strip()
                 if label:
-                    label_key = label.lower()
-                    if label_lower in seen_labels:
-                        prev_row = seen_labels[label_key] + 2
-                        curr_row = idx + 2
-                        raise ValueError(f"Duplicate label '{label}' found at row {curr_row} (already exists at row {prev_row}).")
-                    label_to_bind[label+key] = nomenclature
-                    seen_labels[label_key] = idx
+                    label_to_bind[label] = nomenclature
  
-        # Replace Bind in XML
+        # Replace in TGML
         in_group = False
         current_text = None
         inside_target_text = False
@@ -88,15 +108,14 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                 in_group = True
             elif elem.tag == "Text" and in_group:
                 current_text = elem.attrib.get("Name", "").strip()
-                inside_target_text = current_text.lower() in label_to_bind
+                inside_target_text = current_text in label_to_bind
             elif elem.tag == "Bind" and in_group and inside_target_text:
-                new_bind = label_to_bind.get(current_text.lower())
-                if new_bind:
-                    elem.set("Name", new_bind)
+                new_bind = label_to_bind.get(current_text)
+                elem.set("Name", new_bind)
             elif elem.tag == "Text" and inside_target_text:
                 inside_target_text = False
  
-        # Save modified XML
+        # Save new file
         output_file = "updated_" + tgml_file.name
         tree.write(output_file, encoding="utf-8", xml_declaration=True)
  
@@ -106,6 +125,7 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         st.success("Binding completed successfully!")
  
     except Exception as e:
+        # shows error if something goes wrong
         st.error(f"Error: {e}")
  
 st.markdown('</div>', unsafe_allow_html=True)
