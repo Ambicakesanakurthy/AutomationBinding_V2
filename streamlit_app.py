@@ -69,11 +69,14 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
             nomenclature = str(row.get("Nomenclature", "")).strip()
             for col in ["First Label", "Second Label", "Third Label"]:
                 label = str(row.get(col, "")).strip()
-                if label and label.lower() != "nan":
-                    label_lower = label.lower()
+                if label:
+                    label_key = label.lower()
                     if label_lower in seen_labels:
+                        prev_row = seen_labels[label_key] + 2
+                        curr_row = idx + 2
                         raise ValueError(f"Duplicate label '{label}' found at row {curr_row} (already exists at row {prev_row}).")
-                    seen_labels[label_lower] = idx
+                    label_to_bind[label+key] = nomenclature
+                    seen_labels[label_key] = idx
  
         # Replace Bind in XML
         in_group = False
