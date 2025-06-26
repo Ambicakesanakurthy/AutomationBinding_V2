@@ -96,22 +96,22 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         seen_labels = set()
      
         for idx, row in df.iterrows():
-            nomenclature = str(row.get("Nomenclature", "")).strip()
+            bind = str(row.get("Nomenclature", "")).strip()
             for col in ["First Label", "Second Label", "Third Label"]:
                 label = str(row.get(col, "")).strip()
                 if label:
-                    lower_label = label.lower()
-                    if lower_label in seen_labels:
+                    key = label.lower()
+                    if key in seen_labels:
                         st.error(f"Duplicate label found in Excel : '{label}' Row {idx+2}, column '{col}')")
                         st.stop()
-                    seen_labels.add(lower_label)
-                    label_to_bind[lower_label] = nomenclature
-                    all_labels.append(lower_label)
+                    seen_labels.add(key)
+                    label_to_bind[key] = bind
+                    all_labels.append(key)
  
         # Replace in TGML
         in_group = False
-        current_text = None
         inside_target_text = False
+        current_text_key = None
  
         for elem in root.iter():
             if elem.tag == "Group":
@@ -119,19 +119,21 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
             elif elem.tag == "Text" and in_group:
                 #get text name
                 text_name = elem.attrib.get("Name", "").strip()  
-                text_name_lower = text_name.lower()
+                key = text_name.lower()
                 # perform fuzzy match tp find closest label
-                matches = difflib.get_close_matches(text_name_lower, all_labels, n=1, cutoff = 0.85)
+                matches = difflib.get_close_matches(key, all_labels, n=1, cutoff = 0.85)
                 if matches:
-                    current_label_key = matches[0]
+                    current_label_key = match[0]
                     # update to matched label
                     inside_target_text = True
                 else:
+                    current_label_key = None
                     inside_target_text = False
                  
-            elif elem.tag == "Bind" and in_group and inside_target_text:
-                if current_label_key and current_label_key in label_to_bind:
-                     elem.set("Name", label_to_bind[current_label_key])
+            elif elem.tag == "Bind" and in_group and inside_target_text and current_label_key:
+                new_bind = label_to_bind[current_label_key]
+                if new_bind:
+                     elem.set("Name", new_bind)
                  
             elif elem.tag == "Text" and inside_target_text:
                  # Reset after target text block ends
