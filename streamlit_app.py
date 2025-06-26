@@ -120,8 +120,9 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                 key = text_name.lower()
                 # perform fuzzy match tp find closest label
                 matches = difflib.get_close_matches(key, all_labels, n=1, cutoff = 0.85)
+             
                 if matches:
-                    current_label_key = match[0]
+                    current_label_key = matches[0]
                     # update to matched label
                     inside_target_text = True
                 else:
