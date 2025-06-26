@@ -19,10 +19,9 @@ st.markdown("""
         background-color:#0070AD;
         padding: 40px 30px;
         border-radius: 15px;
-        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
         max-width: 600px;
         margin: 50px auto;
-        color: white;
+        color: #0070AD;
     }
  
     h1 {
