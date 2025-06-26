@@ -12,13 +12,9 @@ st.set_page_config(page_title="Automatic Binding Tool", layout="centered")
 st.markdown("""
     <style>
     /* set the full page background color */
-    body {
-        background-color: #0070AD;
-    }
+    body { background-color: #0070AD; }
     /* style the content box */
-    main {
-         color: pink;
-     }
+    main { color: pink; }
 
      /* title styling */
     h1 {
@@ -98,15 +94,17 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         for idx, row in df.iterrows():
             bind = str(row.get("Nomenclature", "")).strip()
             for col in ["First Label", "Second Label", "Third Label"]:
-                label = str(row.get(col, "")).strip()
-                if label:
-                    key = label.lower()
-                    if key in seen_labels:
-                        st.error(f"Duplicate label found in Excel : '{label}' Row {idx+2}, column '{col}')")
-                        st.stop()
-                    seen_labels.add(key)
-                    label_to_bind[key] = bind
-                    all_labels.append(key)
+                label = row.get(col)
+                if pd.isna(label) or not str(label).strip():
+                     continue
+                label = str(label).strp()
+                key = label.lower()
+                if key in seen_labels:
+                    st.error(f"Duplicate label found in Excel : '{label}' Row {idx+2}, column '{col}')")
+                    st.stop()
+                seen_labels.add(key)
+                label_to_bind[key] = bind
+                all_labels.append(key)
  
         # Replace in TGML
         in_group = False
