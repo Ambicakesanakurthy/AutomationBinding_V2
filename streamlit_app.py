@@ -16,7 +16,7 @@ st.markdown("""
     }
  
     .form-box {
-        background-color: 	#0070AD;
+        background-color:#0070AD;
         padding: 40px 30px;
         border-radius: 15px;
         box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
@@ -34,7 +34,7 @@ st.markdown("""
     .sub {
         text-align: center;
         font-size: 16px;
-        color: #ecf0f1;
+        color: #FF0090;
         margin-bottom: 30px;
     }
  
