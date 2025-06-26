@@ -118,27 +118,25 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                 in_group = True   #entering a group block
             elif elem.tag == "Text" and in_group:
                 #get text name
-                current_text = elem.attrib.get("Name", "").strip()  
-                lower_text = current_text.lower()
+                text_name = elem.attrib.get("Name", "").strip()  
+                text_name_lower = text_name.lower()
                 # perform fuzzy match tp find closest label
-                matches = difflib.get_close_matches(current_text, all_labels, n=1, cutoff = 0.85)
+                matches = difflib.get_close_matches(text_name_lower, all_labels, n=1, cutoff = 0.85)
                 if matches:
-                    matched_label = matches[0]
+                    current_label_key = matches[0]
                     # update to matched label
-                    current_text = matched_label
                     inside_target_text = True
                 else:
                     inside_target_text = False
                  
             elif elem.tag == "Bind" and in_group and inside_target_text:
-                new_bind = label_to_bind.get(current_text)
-                if new_bind:
-                     # Replace bind name
-                     elem.set("Name", new_bind)
+                if current_label_key and current_label_key in label_to_bind:
+                     elem.set("Name", label_to_bind[current_label_key])
                  
             elif elem.tag == "Text" and inside_target_text:
                  # Reset after target text block ends
                 inside_target_text = False
+                current_label_key = None
  
         # Save new file
         output_file = BytesIO()
