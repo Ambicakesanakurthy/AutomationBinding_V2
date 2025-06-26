@@ -16,7 +16,7 @@ st.markdown("""
     }
  
     .form-box {
-        background-color: #3498db;
+        background-color: 	#0070AD;
         padding: 40px 30px;
         border-radius: 15px;
         box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
