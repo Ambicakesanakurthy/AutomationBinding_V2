@@ -12,7 +12,7 @@ st.set_page_config(page_title="Automatic Binding Tool", layout="centered")
 st.markdown("""
     <style>
     /* set the full page background color */
-    body { background-color:yellow; }
+    body { background-color: #0070AD; }
     /* style the content box */
     main { color: pink; }
 
@@ -48,7 +48,7 @@ st.markdown("""
         background-color: #16a085;
     }
     .block-container {
-        background-color: #0070AD !important;
+        background-color: yellow !important;
     }
     </style>
 """, unsafe_allow_html=True)
