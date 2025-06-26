@@ -140,8 +140,8 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                 current_label_key = None
  
         # Save new file
-        output_file = BytesIO()
-        tree.write(output_file, encoding="utf-8", xml_declaration=True)
+        output = BytesIO()
+        tree.write(output, encoding="utf-8", xml_declaration=True)
         output.seek(0)
  
         st.download_button("Download Updated TGML", output, file_name=f"updated_{tgml_file.name}", mime = "application/xml")
