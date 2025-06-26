@@ -47,8 +47,11 @@ st.markdown("""
     .stButton>button:hover {
         background-color: #16a085;
     }
+    #set the full page background
     .block-container {
         background-color: #0070AD !important;
+        padding-top:50px;
+        padding-bottom:50px;
     }
     </style>
 """, unsafe_allow_html=True)
