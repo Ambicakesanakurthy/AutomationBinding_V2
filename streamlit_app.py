@@ -93,14 +93,20 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
              
         label_to_bind = {}
         all_labels = []
+        seen_labels = set()
      
-        for _, row in df.iterrows():
+        for idx, row in df.iterrows():
             nomenclature = str(row.get("Nomenclature", "")).strip()
             for col in ["First Label", "Second Label", "Third Label"]:
                 label = str(row.get(col, "")).strip()
                 if label:
-                    label_to_bind[label] = nomenclature
-                    all_labels.append(label)
+                    lower_label = label.lower()
+                    if lower_label in seen_labels:
+                        st.error(f"Duplicate label found in Excel : '{label}' Row {idx+2}, column '{col}')")
+                        st.stop()
+                    seen_labels.add(lower_label)
+                    label_to_bind[lower_label] = nomenclature
+                    all_labels.append(lower_label)
  
         # Replace in TGML
         in_group = False
@@ -112,7 +118,8 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                 in_group = True   #entering a group block
             elif elem.tag == "Text" and in_group:
                 #get text name
-                current_text = elem.attrib.get("Name", "").strip()   
+                current_text = elem.attrib.get("Name", "").strip()  
+                lower_text = current_text.lower()
                 # perform fuzzy match tp find closest label
                 matches = difflib.get_close_matches(current_text, all_labels, n=1, cutoff = 0.85)
                 if matches:
@@ -122,11 +129,13 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                     inside_target_text = True
                 else:
                     inside_target_text = False
+                 
             elif elem.tag == "Bind" and in_group and inside_target_text:
                 new_bind = label_to_bind.get(current_text)
                 if new_bind:
                      # Replace bind name
                      elem.set("Name", new_bind)
+                 
             elif elem.tag == "Text" and inside_target_text:
                  # Reset after target text block ends
                 inside_target_text = False
