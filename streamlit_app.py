@@ -11,31 +11,33 @@ st.set_page_config(page_title="Automatic Binding Tool", layout="centered")
 # Add custom CSS for styling the background and form
 st.markdown("""
     <style>
-    /* set the full page background color */
-    body { background-color: #0070AD; }
-    /* style the content box */
-    main { color: pink; }
-
-     /* title styling */
+   body {
+        background-color: white;
+    }
+ 
+    .form-box {
+        background-color: #3498db;
+        padding: 40px 30px;
+        border-radius: 15px;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+        max-width: 600px;
+        margin: 50px auto;
+        color: white;
+    }
+ 
     h1 {
         text-align: center;
-        color: #114488;
-        font-size: 32px;
+        color: white;
+        margin-bottom: 10px;
     }
-    p {
-       text-align: center;
-       margin-bottom: 20px;
-       font-size: 14px;
-       color: black;
-     }
-    /* sub title styling*/
+ 
     .sub {
         text-align: center;
-        color: pink;
-        margin-bottom: 30px;
         font-size: 16px;
+        color: #ecf0f1;
+        margin-bottom: 30px;
     }
-    /* button styling */
+ 
     .stButton>button {
         background-color: #1abc9c;
         color: white;
@@ -43,15 +45,9 @@ st.markdown("""
         border-radius: 8px;
         padding: 10px 24px;
     }
-    /* Hover effect for buttn=on */
+ 
     .stButton>button:hover {
         background-color: #16a085;
-    }
-    #set the full page background
-    .block-container {
-        background-color: #0070AD !important;
-        padding-top:50px;
-        padding-bottom:50px;
     }
     </style>
 """, unsafe_allow_html=True)
