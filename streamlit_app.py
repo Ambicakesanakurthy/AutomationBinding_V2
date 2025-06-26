@@ -3,6 +3,7 @@ import streamlit as st     # For creating web UI
 import pandas as pd        # For reading excel file
 import xml.etree.ElementTree as ET   # For parsing and editing TGML
 from io import BytesIO
+import difflib    # For Fuzzy Matching of label names
 
 # Set title on browser tab and center-align the layout
 st.set_page_config(page_title="Automatic Binding Tool", layout="centered")
@@ -11,7 +12,7 @@ st.set_page_config(page_title="Automatic Binding Tool", layout="centered")
 st.markdown("""
     <style>
     /* set the full page background color */
-    .body {
+    body {
         background-color: #0070AD;
     }
     /* style the content box */
@@ -32,7 +33,7 @@ st.markdown("""
        color: black;
      }
     /* sub title styling*/
-    sub {
+    .sub {
         text-align: center;
         color: pink;
         margin-bottom: 30px;
@@ -50,7 +51,7 @@ st.markdown("""
     .stButton>button:hover {
         background-color: #16a085;
     }
-    block-container {
+    .block-container {
         background-color: #0070AD !important;
     }
     </style>
@@ -66,14 +67,14 @@ st.markdown('<p class="sub">Upload TGML & Excel File to Update Bindings</p>', un
 # File uploaders and input
 tgml_file = st.file_uploader("TGML File", type=["tgml", "xml"])
 excel_file = st.file_uploader("Excel File", type="xlsx")
-sheet_name = None
+sheet_name = None   #holds seclected sheet name
 
 if excel_file:
     try:
      # Reads sheet names from excel file
      xls = pd.ExcelFile(excel_file)
      # List of sheet names
-     sheet_names = xls.sheet_names    
+     sheet_names = xls.sheet_names     # get all sheet names
      # Creates the Dropdown menu
      sheet_name = st.selectbox("select a sheet from the excel file", sheet_names)
     except Exception as e:
@@ -89,14 +90,17 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
  
         # Read Excel
         df = pd.read_excel(excel_file, sheet_name=sheet_name)
+             
         label_to_bind = {}
- 
+        all_labels = []
+     
         for _, row in df.iterrows():
             nomenclature = str(row.get("Nomenclature", "")).strip()
             for col in ["First Label", "Second Label", "Third Label"]:
                 label = str(row.get(col, "")).strip()
                 if label:
                     label_to_bind[label] = nomenclature
+                    all_labels.append(label)
  
         # Replace in TGML
         in_group = False
@@ -105,23 +109,34 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
  
         for elem in root.iter():
             if elem.tag == "Group":
-                in_group = True
+                in_group = True   #entering a group block
             elif elem.tag == "Text" and in_group:
-                current_text = elem.attrib.get("Name", "").strip()
-                inside_target_text = current_text in label_to_bind
+                #get text name
+                current_text = elem.attrib.get("Name", "").strip()   
+                # perform fuzzy match tp find closest label
+                matches = difflib.get_close_matches(current_text, all_labels, n=1, cutoff = 0.85)
+                if matches:
+                    matched_label = matches[0]
+                    # update to matched label
+                    current_text = matched_label
+                    inside_target_text = True
+                else:
+                    inside_target_text = False
             elif elem.tag == "Bind" and in_group and inside_target_text:
                 new_bind = label_to_bind.get(current_text)
-                elem.set("Name", new_bind)
+                if new_bind:
+                     # Replace bind name
+                     elem.set("Name", new_bind)
             elif elem.tag == "Text" and inside_target_text:
+                 # Reset after target text block ends
                 inside_target_text = False
  
         # Save new file
-        output_file = "updated_" + tgml_file.name
+        output_file = BytesIO()
         tree.write(output_file, encoding="utf-8", xml_declaration=True)
+        output.seek(0)
  
-        with open(output_file, "rb") as f:
-            st.download_button("Download Updated TGML", f, file_name=output_file)
- 
+        st.download_button("Download Updated TGML", output, file_name=f"updated_{tgml_file.name}", mime = "application/xml")
         st.success("Binding completed successfully!")
  
     except Exception as e:
