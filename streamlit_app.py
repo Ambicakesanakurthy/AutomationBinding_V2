@@ -97,7 +97,7 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                 label = row.get(col)
                 if pd.isna(label) or not str(label).strip():
                      continue
-                label = str(label).strp()
+                label = str(label).strip()
                 key = label.lower()
                 if key in seen_labels:
                     st.error(f"Duplicate label found in Excel : '{label}' Row {idx+2}, column '{col}')")
