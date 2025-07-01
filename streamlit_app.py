@@ -53,7 +53,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
  
 # Add title and description
-st.markdown('<div class="main"><div class="form-box">', unsafe_allow_html=True)
+st.markdown('<div class="form-box">', unsafe_allow_html=True)
 #title of the app
 st.markdown('<h1>TGML Binding Tool</h1>', unsafe_allow_html=True)
 # sub text with instreuctions
@@ -158,4 +158,4 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         # shows error if something goes wrong
         st.error(f"Error: {e}")
  
-st.markdown('</div></div>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
