@@ -99,7 +99,7 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                   st.error(f"Third Label in Excel sheet is not available, please check!")
                   break;
         else:
-                  for idx, row in df.iterrows():
+            for idx, row in df.iterrows():
                       bind = str(row.get("Nomenclature", "")).strip()
                             for col in ["First Label", "Second Label", "Third Label"]:
                                    label = row.get(col)
@@ -112,7 +112,7 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                                        st.stop()
                                    seen_labels.add(key)
                                    label_to_bind[key] = bind
-                                   all_labels.append(key)
+                                   all_labels.append(key)    
  
         # Replace in TGML
         in_group = False
