@@ -11,10 +11,11 @@ st.set_page_config(page_title="Automatic Binding Tool", layout="centered")
 # Add custom CSS for styling the background and form
 st.markdown("""
     <style>
-    main {
-            color: #0070AD;
-            padding: 50px 0;
-        }
+     /* Set background for the main container */
+    .stApp {
+            background-color: #0070AD;
+        }
+
     .form-box {
             background-color: white;
             padding: 40px 30px;
