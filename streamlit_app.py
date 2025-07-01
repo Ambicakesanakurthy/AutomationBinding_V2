@@ -11,24 +11,14 @@ st.set_page_config(page_title="Automatic Binding Tool", layout="centered")
 # Add custom CSS for styling the background and form
 st.markdown("""
     <style>
-    body {
-      background: #0070AD;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #333;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh; 
-    }
- 
     .form-box {
-        background-color:#0070AD;
-        padding: 40px 30px;
-        border-radius: 15px;
-        max-width: 600px;
-        margin: 50px auto;
-        color: #0070AD;
-    }
+        background-color: #0070AD;
+        padding: 40px 30px;
+        border-radius: 15px;
+        max-width: 600px;
+        margin: 50px auto;
+        color: white;
+    }
  
     h1 {
         text-align: center;
@@ -58,7 +48,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
  
 # Add title and description
-st.markdown('<div class="main">', unsafe_allow_html=True)
+st.markdown('<div class="form-box">', unsafe_allow_html=True)
 #title of the app
 st.markdown('<h1>TGML Binding Tool</h1>', unsafe_allow_html=True)
 # sub text with instreuctions
