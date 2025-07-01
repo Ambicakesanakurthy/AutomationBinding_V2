@@ -96,8 +96,8 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                  st.stop()
  
         for idx, row in df.iterrows():
-                      bind = str(row.get("Nomenclature", "")).strip()
-                            for col in ["First Label", "Second Label", "Third Label"]:
+               bind = str(row.get("Nomenclature", "")).strip()
+                      for col in ["First Label", "Second Label", "Third Label"]:
                                    label = row.get(col)
                                    if pd.isna(label) or not str(label).strip():
                                         continue
