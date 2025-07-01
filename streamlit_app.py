@@ -89,17 +89,13 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         all_labels = []
         seen_labels = set()
 
-        if "First Label" not in col:
-            st.error(f"First Label in Excel sheet is not available, please check!")
-            break;
-        elif "Second Label" not in col:
-            st.error(f"Second Label in Excel sheet is not available, please check!")
-            break;
-        elif "Third Label" not in col:
-            st.error(f"Third Label in Excel sheet is not available, please check!")
-            break;
-        else:
-            for idx, row in df.iterrows():
+        required_columns = ["First Label", "Second Label", "Third Label"]
+        for column in required_columns:
+            if column not in col:
+                 st.error(f"'{column}' in Excel sheet is not available, please check!")
+                 st.stop()
+ 
+        for idx, row in df.iterrows():
                       bind = str(row.get("Nomenclature", "")).strip()
                             for col in ["First Label", "Second Label", "Third Label"]:
                                    label = row.get(col)
