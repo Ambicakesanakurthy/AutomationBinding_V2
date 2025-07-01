@@ -89,9 +89,9 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         all_labels = []
         seen_labels = set()
 
-        required_columns = ["First Label", "Second Label", "Third Label"]
-        for column in required_columns:
-            if column not in required_columns:
+        df.required_columns = ["First Label", "Second Label", "Third Label"]
+        for column in df.required_columns:
+            if column not in df.required_columns:
                  st.error(f"'{column}' in Excel sheet is not available, please check!")
                  st.stop()
  
