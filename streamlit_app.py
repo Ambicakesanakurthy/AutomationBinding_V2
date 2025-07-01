@@ -11,18 +11,19 @@ st.set_page_config(page_title="Automatic Binding Tool", layout="centered")
 # Add custom CSS for styling the background and form
 st.markdown("""
     <style>
-    .body {
+    .main {
             background-color: #0070AD;
+            padding: 50px 0;
         }
     .form-box {
-        background-color: #0070AD;
-        padding: 40px 30px;
-        border-radius: 15px;
-        max-width: 600px;
-        margin: 50px auto;
-        color: white;
-    }
- 
+            background-color: white;
+            padding: 40px 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            margin: auto;
+            color: #333;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+          }
     h1 {
         text-align: center;
         color: white;
@@ -51,7 +52,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
  
 # Add title and description
-st.markdown('<div class="form-box">', unsafe_allow_html=True)
+st.markdown('<div class="main"><div class="form-box">', unsafe_allow_html=True)
 #title of the app
 st.markdown('<h1>TGML Binding Tool</h1>', unsafe_allow_html=True)
 # sub text with instreuctions
@@ -156,4 +157,4 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         # shows error if something goes wrong
         st.error(f"Error: {e}")
  
-st.markdown('</div>', unsafe_allow_html=True)
+st.markdown('</div></div>', unsafe_allow_html=True)
