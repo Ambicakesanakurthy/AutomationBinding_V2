@@ -89,26 +89,28 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         all_labels = []
         seen_labels = set()
 
-        df.required_columns = ["First Label", "Second Label", "Third Label"]
-        for column in df.required_columns:
-            if column not in df.required_columns:
-                 st.error(f"'{column}' in Excel sheet is not available, please check!")
-                 st.stop()
- 
+        required_columns = ["First Label", "Second Label", "Third Label"]
+
+        for column in required_columns:
+            if column not in df.columns:
+                st.error(f"'{column}' is not available in the Excel sheet, please check!")
+                st.stop()
+        
         for idx, row in df.iterrows():
-               bind = str(row.get("Nomenclature", "")).strip()
-               for col in ["First Label", "Second Label", "Third Label"]:
-                                   label = row.get(col)
-                                   if pd.isna(label) or not str(label).strip():
-                                        continue
-                                   label = str(label).strip()
-                                   key = label.lower()
-                                   if key in seen_labels:
-                                       st.error(f"Duplicate label found in Excel : '{label}' Row {idx+2}, column '{col}')")
-                                       st.stop()
-                                   seen_labels.add(key)
-                                   label_to_bind[key] = bind
-                                   all_labels.append(key)    
+            bind = str(row.get("Nomenclature", "")).strip()
+            for col in required_columns:
+                label = row.get(col)
+                if pd.isna(label) or not str(label).strip():
+                    continue
+                label = str(label).strip()
+                key = label.lower()
+                if key in seen_labels:
+                    st.error(f"Duplicate label found in Excel: '{label}' Row {idx+2}, column '{col}'")
+                    st.stop()
+                seen_labels.add(key)
+                label_to_bind[key] = bind
+                all_labels.append(key)
+    
  
         # Replace in TGML
         in_group = False
