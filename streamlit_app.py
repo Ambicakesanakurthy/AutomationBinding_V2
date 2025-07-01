@@ -12,7 +12,7 @@ st.set_page_config(page_title="Automatic Binding Tool", layout="centered")
 st.markdown("""
     <style>
     main {
-            background-color: #0070AD;
+            color: #0070AD;
             padding: 50px 0;
         }
     .form-box {
