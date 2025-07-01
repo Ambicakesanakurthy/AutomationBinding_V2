@@ -93,7 +93,7 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
 
         for column in required_columns:
             if column not in df.columns:
-                st.error(f"'{column}' is not available in the Excel sheet, please check!")
+                st.error(f"'{column}' Column is not available in the Excel sheet, please check!")
                 st.stop()
         
         for idx, row in df.iterrows():
