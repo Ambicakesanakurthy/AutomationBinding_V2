@@ -99,10 +99,10 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                 st.stop()
 
 def normalize_label(label):
-            # Remove common suffixes like _on, _off, _start, _end
-            return re.sub(r'_(on|off|start|end)$', '', label.lower())
+    # Remove common suffixes like _on, _off, _start, _end
+    return re.sub(r'_(on|off|start|end)$', '', label.lower())
 
-        seen_labels = set()
+seen_labels = set()
 
 for idx, row in df.iterrows():
     bind = str(row.get("Nomenclature", "")).strip()
@@ -115,9 +115,10 @@ for idx, row in df.iterrows():
         normalized_key = normalize_label(key)
 
         # Check if normalized label or any of its variants already seen
-        if any(existing.startswith(normalized_key) or normalized_key.startswith(existing) for existing in seen_labels):
-            st.error(f"Duplicate or conflicting label found in Excel: '{label}' Row {idx+2}, column '{col}'")
-            st.stop()
+        if any(existing.startswith(normalized_key) or normalized_key.startswith(existing) 
+for existing in seen_labels):
+        st.error(f"Duplicate or conflicting label found in Excel: '{label}' Row {idx+2}, column '{col}'")
+        st.stop()
 
         seen_labels.add(normalized_key)
         label_to_bind[normalized_key] = bind
