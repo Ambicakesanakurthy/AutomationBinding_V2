@@ -90,7 +90,7 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         all_labels = []
         seen_labels = set()
 
-        required_columns = ["First Label", "Second Label", "Third Label"]
+        required_columns = ["First Label", "Second Label", "Third Label", "Nomenclature"]
 
         for column in required_columns:
             if column not in df.columns:
