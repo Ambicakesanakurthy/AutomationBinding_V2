@@ -1,3 +1,5 @@
 **** Steps ****
 
->>> Added logic to generate an error if any label column is missing inthe Excel sheet.
+>>> Added the logic to find the duplicate labels in the column ex:label-1_on in 2nd row and label-1_on in 5th row, it throws an error by saying 5th row having duplicate please check.
+
+>>> Added logic to generate an error if any label column(First label, second label, third label) and nomenclure column is missing in the Excel sheet.
