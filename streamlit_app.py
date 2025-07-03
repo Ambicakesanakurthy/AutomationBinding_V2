@@ -4,7 +4,6 @@ import pandas as pd        # For reading excel file
 import xml.etree.ElementTree as ET   # For parsing and editing TGML
 from io import BytesIO
 import difflib    # For Fuzzy Matching of label names
-import re
 
 # Set title on browser tab and center-align the layout
 st.set_page_config(page_title="Automatic Binding Tool", layout="centered")
@@ -91,18 +90,12 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         all_labels = []
         seen_labels = set()
 
-        required_columns = ["First Label", "Second Label", "Third Label", "Nomenclature"]
+        required_columns = ["First Label", "Second Label", "Third Label"]
 
         for column in required_columns:
             if column not in df.columns:
                 st.error(f"'{column}' Column is not available in the Excel sheet, please check!")
                 st.stop()
-
-        def normalize_label(label):
-            # Remove common suffixes like _on, _off, _start, _end
-            return re.sub(r'_(on|off|start|end)$', '', label.lower())
-        
-        seen_labels = set()
         
         for idx, row in df.iterrows():
             bind = str(row.get("Nomenclature", "")).strip()
@@ -112,17 +105,13 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                     continue
                 label = str(label).strip()
                 key = label.lower()
-                normalized_key = normalize_label(key)
-
-        # Check if normalized label or any of its variants already seen
-        if any(existing.startswith(normalized_key) or normalized_key.startswith(existing) 
-        for existing in seen_labels):
-                st.error(f"Duplicate or conflicting label found in Excel: '{label}' Row {idx+2}, column '{col}'")
-                st.stop()
-
-        seen_labels.add(normalized_key)
-        label_to_bind[normalized_key] = bind
-        all_labels.append(normalized_key)
+                if key in seen_labels:
+                    st.error(f"Duplicate label found in Excel: '{label}' Row {idx+2}, column '{col}'")
+                    st.stop()
+                seen_labels.add(key)
+                label_to_bind[key] = bind
+                all_labels.append(key)
+    
  
         # Replace in TGML
         in_group = False
