@@ -89,6 +89,7 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         label_to_bind = {}
         all_labels = []
         seen_labels = set()
+        matched_label_count = 0
 
         required_columns = ["First Label", "Second Label", "Third Label","Nomenclature"]
 
@@ -130,6 +131,7 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
              
                 if matches:
                     current_label_key = matches[0]
+                    matched_label_count++
                     # update to matched label
                     inside_target_text = True
                 else:
@@ -152,7 +154,7 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         output.seek(0)
  
         st.download_button("Download Updated TGML", output, file_name=f"updated_{tgml_file.name}", mime = "application/xml")
-        st.success("Binding completed successfully!")
+        st.success("Binding completed successfully!/n{matched_label_count} bind names got replaced....")
  
     except Exception as e:
         # shows error if something goes wrong
