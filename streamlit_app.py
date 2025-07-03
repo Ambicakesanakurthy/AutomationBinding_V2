@@ -131,7 +131,7 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
              
                 if matches:
                     current_label_key = matches[0]
-                    matched_label_count++
+                    matched_label_count ++
                     # update to matched label
                     inside_target_text = True
                 else:
