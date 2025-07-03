@@ -148,7 +148,10 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                 inside_target_text = False
                 current_label_key = None
 
-        unmatched_count = len(label_to_bind) - matched_label_count
+        
+        total_labels = len(all_labels)
+        unmatched_count = total_labels - matched_label_count
+
         # Save new file
         output = BytesIO()
         tree.write(output, encoding="utf-8", xml_declaration=True)
@@ -157,6 +160,7 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         st.download_button("Download Updated TGML", output, file_name=f"updated_{tgml_file.name}", mime = "application/xml")
         st.markdown(f"""
            ** Binding completed successfully! **
+           
            {matched_label_count} bind names got replaced....
            {unmatched_count} bind names didn't got replaced...
         """)
