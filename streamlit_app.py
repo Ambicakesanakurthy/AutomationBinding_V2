@@ -148,7 +148,7 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                 inside_target_text = False
                 current_label_key = None
 
-        unmatched_count = len(all_labels) - matched_label_count
+        unmatched_count = len(label_to_bind) - matched_label_count
         # Save new file
         output = BytesIO()
         tree.write(output, encoding="utf-8", xml_declaration=True)
