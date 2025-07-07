@@ -137,7 +137,7 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
          
                 # Show summary
         st.download_button("Download Updated TGML", output, file_name=f"updated_{tgml_file.name}", mime="application/xml")
-                st.success("✅ Binding completed successfully!")
+        st.success("✅ Binding completed successfully!")
          
         st.info(f"🔁 Total Labels in Excel: **{len(all_labels)}**")
         st.info(f"✅ Replaced Labels: **{replaced_count}**")
