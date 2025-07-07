@@ -1,14 +1,12 @@
-# Imports
 import streamlit as st
 import pandas as pd
 import xml.etree.ElementTree as ET
 from io import BytesIO
 import difflib
  
-# Streamlit page config
 st.set_page_config(page_title="Automatic Binding Tool", layout="centered")
  
-# Custom CSS
+# Custom CSS for styling
 st.markdown("""
 <style>
 .stApp {
@@ -21,7 +19,7 @@ st.markdown("""
     max-width: 600px;
     margin: auto;
     color: #333;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 h1 {
     text-align: center;
@@ -47,26 +45,24 @@ h1 {
 </style>
 """, unsafe_allow_html=True)
  
-# UI Titles
+# UI
 st.markdown('<div class="form-box">', unsafe_allow_html=True)
 st.markdown('<h1>TGML Binding Tool</h1>', unsafe_allow_html=True)
 st.markdown('<p class="sub">Upload TGML & Excel File to Update Bindings</p>', unsafe_allow_html=True)
  
-# Upload files
+# Uploaders
 tgml_file = st.file_uploader("TGML File", type=["tgml", "xml"])
 excel_file = st.file_uploader("Excel File", type="xlsx")
 sheet_name = None
  
-# Sheet dropdown
 if excel_file:
     try:
         xls = pd.ExcelFile(excel_file)
         sheet_names = xls.sheet_names
         sheet_name = st.selectbox("Select a sheet from the Excel file", sheet_names)
     except Exception as e:
-        st.error(f"Error in Reading Excel Sheet Names: {e}")
+        st.error(f"Error reading Excel: {e}")
  
-# Button
 if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
     try:
         # Parse XML
@@ -76,16 +72,14 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         # Read Excel
         df = pd.read_excel(excel_file, sheet_name=sheet_name)
  
-        # Prepare mappings
         label_to_bind = {}
-        all_labels = []
+        all_labels = set()
         seen_labels = set()
  
         required_columns = ["First Label", "Second Label", "Third Label"]
- 
-        for column in required_columns:
-            if column not in df.columns:
-                st.error(f"'{column}' Column is not available in the Excel sheet, please check!")
+        for col in required_columns:
+            if col not in df.columns:
+                st.error(f"'{col}' column missing in Excel.")
                 st.stop()
  
         for idx, row in df.iterrows():
@@ -97,15 +91,13 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                 label = str(label).strip()
                 key = label.lower()
                 if key in seen_labels:
-                    st.error(f"Duplicate label found in Excel: '{label}' Row {idx+2}, column '{col}'")
+                    st.error(f"Duplicate label '{label}' found in Excel at row {idx+2}, column '{col}'")
                     st.stop()
                 seen_labels.add(key)
                 label_to_bind[key] = bind
-                all_labels.append(key)
+                all_labels.add(key)
  
-        # Counters
-        replaced_count = 0
-        unmatched_labels = []
+        matched_labels = set()
  
         in_group = False
         inside_target_text = False
@@ -121,38 +113,46 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                 if matches:
                     current_label_key = matches[0]
                     inside_target_text = True
+                    matched_labels.add(current_label_key)
                 else:
-                    unmatched_labels.append(text_name)
-                    inside_target_text = False
                     current_label_key = None
+                    inside_target_text = False
             elif elem.tag == "Bind" and in_group and inside_target_text and current_label_key:
                 new_bind = label_to_bind[current_label_key]
                 if new_bind:
                     elem.set("Name", new_bind)
-                    replaced_count += 1
             elif elem.tag == "Text" and inside_target_text:
                 inside_target_text = False
                 current_label_key = None
  
-        # Save updated file
+        # Calculate unmatched
+        unmatched_labels = sorted(all_labels - matched_labels)
+        replaced_count = len(matched_labels)
+        not_replaced_count = len(unmatched_labels)
+ 
+        # Save updated TGML
         output = BytesIO()
         tree.write(output, encoding="utf-8", xml_declaration=True)
-        output.seek(0)
- 
-        # Download button
-        st.download_button("Download Updated TGML", output, file_name=f"updated_{tgml_file.name}", mime="application/xml")
-        st.success("✅ Binding completed successfully!")
+output.seek(0)
  
         # Show summary
-        st.info(f"🔁 Total Bind Replacements Done: **{replaced_count}**")
-        st.info(f"❌ Total Unmatched Text Labels: **{len(unmatched_labels)}**")
+st.download_button("Download Updated TGML", output, file_name=f"updated_{tgml_file.name}", mime="application/xml")
+        st.success("✅ Binding completed successfully!")
  
+st.info(f"🔁 Total Labels in Excel: **{len(all_labels)}**")
+st.info(f"✅ Replaced Labels: **{replaced_count}**")
+st.info(f"❌ Not Replaced Labels: **{not_replaced_count}**")
+ 
+        # Create Excel of unmatched labels
         if unmatched_labels:
-            with st.expander("View Unmatched Labels"):
-                st.write(unmatched_labels)
+            df_unmatched = pd.DataFrame({"Unmatched Labels": unmatched_labels})
+            excel_out = BytesIO()
+            with pd.ExcelWriter(excel_out, engine="xlsxwriter") as writer:
+                df_unmatched.to_excel(writer, index=False, sheet_name="Unmatched Labels")
+excel_out.seek(0)
+            st.download_button("Download Unmatched Labels Excel", excel_out, file_name="unmatched_labels.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
  
     except Exception as e:
         st.error(f"Error: {e}")
  
-# Close div
 st.markdown('</div>', unsafe_allow_html=True)
