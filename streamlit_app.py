@@ -140,12 +140,12 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         output.seek(0)
  
         # Download button
-st.download_button("Download Updated TGML", output, file_name=f"updated_{tgml_file.name}", mime="application/xml")
-st.success("✅ Binding completed successfully!")
+        st.download_button("Download Updated TGML", output, file_name=f"updated_{tgml_file.name}", mime="application/xml")
+        st.success("✅ Binding completed successfully!")
  
         # Show summary
-st.info(f"🔁 Total Bind Replacements Done: **{replaced_count}**")
-st.info(f"❌ Total Unmatched Text Labels: **{len(unmatched_labels)}**")
+        st.info(f"🔁 Total Bind Replacements Done: **{replaced_count}**")
+        st.info(f"❌ Total Unmatched Text Labels: **{len(unmatched_labels)}**")
  
         if unmatched_labels:
             with st.expander("View Unmatched Labels"):
