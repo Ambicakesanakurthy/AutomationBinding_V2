@@ -137,12 +137,12 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         # Save updated TGML
         output = BytesIO()
         tree.write(output, encoding="utf-8", xml_declaration=True)
-output.seek(0)
+        output.seek(0)
  
         # Show counts
         st.success("✅ Binding completed successfully!")
-st.info(f"🔹 Total unique labels in Excel: {total_labels}")
-st.info(f"✅ Replaced labels: {len(replaced_labels)}")
+        st.info(f"🔹 Total unique labels in Excel: {total_labels}")
+        st.info(f"✅ Replaced labels: {len(replaced_labels)}")
         st.warning(f"❌ Labels not replaced: {len(non_replaced_labels)}")
  
         # Write non-replaced labels Excel
@@ -151,7 +151,7 @@ st.info(f"✅ Replaced labels: {len(replaced_labels)}")
             out_excel = BytesIO()
             with pd.ExcelWriter(out_excel, engine="xlsxwriter") as writer:
                 out_df.to_excel(writer, index=False)
-out_excel.seek(0)
+            out_excel.seek(0)
             st.download_button(
                 "Download Unmatched Labels Excel",
                 out_excel,
@@ -159,9 +159,10 @@ out_excel.seek(0)
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             )
  
-st.download_button("Download Updated TGML", output, file_name=f"updated_{tgml_file.name}", mime="application/xml")
+        st.download_button("Download Updated TGML", output, file_name=f"updated_{tgml_file.name}", mime="application/xml")
  
     except Exception as e:
         st.error(f"Error: {e}")
  
 st.markdown('</div>', unsafe_allow_html=True)
+ 
