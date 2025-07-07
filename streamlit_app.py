@@ -48,7 +48,7 @@ h1 {
 """, unsafe_allow_html=True)
  
 # Add title and description
-st.markdown('<div class="form-box"><h1>TGML Binding Tool</h1>'
+st.markdown('<div class="form-box"<h1>TGML Binding Tool</h1>>', unsafe_allow_html=True)
 st.markdown('<p class="sub">Upload TGML & Excel File to Update Bindings</p>', unsafe_allow_html=True)
  
 # File uploaders
@@ -162,6 +162,6 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
  
     except Exception as e:
         st.error(f"Error: {e}")
-, unsafe_allow_html=True)
+
 st.markdown('</div>', unsafe_allow_html=True)
  
