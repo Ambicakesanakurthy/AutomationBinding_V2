@@ -137,11 +137,11 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         # Save updated file
         output = BytesIO()
         tree.write(output, encoding="utf-8", xml_declaration=True)
-output.seek(0)
+        output.seek(0)
  
         # Download button
 st.download_button("Download Updated TGML", output, file_name=f"updated_{tgml_file.name}", mime="application/xml")
-        st.success("✅ Binding completed successfully!")
+st.success("✅ Binding completed successfully!")
  
         # Show summary
 st.info(f"🔁 Total Bind Replacements Done: **{replaced_count}**")
