@@ -76,10 +76,10 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         # Read Excel
         df = pd.read_excel(excel_file, sheet_name=sheet_name)
  
+        # Initialize label mapping
         label_to_bind = {}
-        all_labels = set()
-        seen_labels = set()
-        used_labels = set()
+        excel_labels = set()   # labels present in Excel
+        used_labels = set()    # labels matched and used in TGML
  
         required_columns = ["First Label", "Second Label", "Third Label"]
  
@@ -89,7 +89,7 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                 st.error(f"'{column}' column is not available in the Excel sheet. Please check!")
                 st.stop()
  
-        # Collect labels and build mapping
+        # Collect labels only from Excel
         for idx, row in df.iterrows():
             bind = str(row.get("Nomenclature", "")).strip()
             for col in required_columns:
@@ -99,12 +99,11 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                 label_str = str(label).strip()
                 label_key = label_str.lower()
  
-                if label_key in seen_labels:
+                if label_key in excel_labels:
                     st.error(f"Duplicate label found in Excel: '{label_str}' at row {idx+2}, column '{col}'")
                     st.stop()
  
-                seen_labels.add(label_key)
-                all_labels.add(label_key)
+                excel_labels.add(label_key)
                 label_to_bind[label_key] = bind
  
         # Replace in TGML
@@ -118,7 +117,8 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
             elif elem.tag == "Text" and in_group:
                 text_name = elem.attrib.get("Name", "").strip()
                 text_key = text_name.lower()
-                matches = difflib.get_close_matches(text_key, all_labels, n=1, cutoff=0.85)
+                # Fuzzy match ONLY with Excel labels
+                matches = difflib.get_close_matches(text_key, excel_labels, n=1, cutoff=0.85)
                 if matches:
                     current_label_key = matches[0]
                     inside_target_text = True
@@ -137,19 +137,19 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         # Save updated TGML
         output = BytesIO()
         tree.write(output, encoding="utf-8", xml_declaration=True)
-        output.seek(0)
+output.seek(0)
  
         # Compute unmatched labels
-        not_replaced_labels = sorted(all_labels - used_labels)
+        not_replaced_labels = sorted(excel_labels - used_labels)
  
-        # Report counts
+        # Show counts
         st.success("✅ Binding completed successfully!")
-        st.info(f"📝 Total Labels in Excel: {len(all_labels)}")
-        st.info(f"✅ Replaced Labels: {len(used_labels)}")
+st.info(f"📝 Total Labels in Excel: {len(excel_labels)}")
+st.info(f"✅ Replaced Labels: {len(used_labels)}")
         st.warning(f"❌ Not Replaced Labels: {len(not_replaced_labels)}")
  
-        # Show download button for updated TGML
-        st.download_button("Download Updated TGML", output, file_name=f"updated_{tgml_file.name}", mime="application/xml")
+        # Download updated TGML
+st.download_button("Download Updated TGML", output, file_name=f"updated_{tgml_file.name}", mime="application/xml")
  
         # Save unmatched labels to Excel
         if not_replaced_labels:
@@ -157,7 +157,7 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
             unmatched_output = BytesIO()
             with pd.ExcelWriter(unmatched_output, engine="xlsxwriter") as writer:
                 unmatched_df.to_excel(writer, index=False)
-            unmatched_output.seek(0)
+unmatched_output.seek(0)
             st.download_button("Download Unmatched Labels", unmatched_output, file_name="unmatched_labels.xlsx")
  
     except Exception as e:
