@@ -137,19 +137,19 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         # Save updated TGML
         output = BytesIO()
         tree.write(output, encoding="utf-8", xml_declaration=True)
-output.seek(0)
+        output.seek(0)
  
         # Compute unmatched labels
         not_replaced_labels = sorted(all_labels - used_labels)
  
         # Report counts
         st.success("✅ Binding completed successfully!")
-st.info(f"📝 Total Labels in Excel: {len(all_labels)}")
-st.info(f"✅ Replaced Labels: {len(used_labels)}")
+        st.info(f"📝 Total Labels in Excel: {len(all_labels)}")
+        st.info(f"✅ Replaced Labels: {len(used_labels)}")
         st.warning(f"❌ Not Replaced Labels: {len(not_replaced_labels)}")
  
         # Show download button for updated TGML
-st.download_button("Download Updated TGML", output, file_name=f"updated_{tgml_file.name}", mime="application/xml")
+        st.download_button("Download Updated TGML", output, file_name=f"updated_{tgml_file.name}", mime="application/xml")
  
         # Save unmatched labels to Excel
         if not_replaced_labels:
@@ -157,7 +157,7 @@ st.download_button("Download Updated TGML", output, file_name=f"updated_{tgml_fi
             unmatched_output = BytesIO()
             with pd.ExcelWriter(unmatched_output, engine="xlsxwriter") as writer:
                 unmatched_df.to_excel(writer, index=False)
-unmatched_output.seek(0)
+            unmatched_output.seek(0)
             st.download_button("Download Unmatched Labels", unmatched_output, file_name="unmatched_labels.xlsx")
  
     except Exception as e:
