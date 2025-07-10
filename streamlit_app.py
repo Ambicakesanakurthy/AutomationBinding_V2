@@ -112,14 +112,14 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                 label_to_bind[key] = bind
                 all_labels.append(key)
 
-         # collect all text labels found in TGML
-         tgml_labels = set()
-         for elem in root.iter():
-             if elem.tag == "Text":
-                 text.name = elem.attrib.get("Name", "").strip().lower()
-                 tgml_labels.add(text_name)
+        # collect all text labels found in TGML
+        tgml_labels = set()
+        for elem in root.iter():
+            if elem.tag == "Text":
+                text.name = elem.attrib.get("Name", "").strip().lower()
+                tgml_labels.add(text_name)
 
-        #Identify labels from excel not found in TGML
+        # Identify labels from excel not found in TGML
         unmatched_labels = []
         for lbl in all_labels:
             #Try fuzzy match
@@ -128,7 +128,7 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                 unmatched_labels.append(lbl)
 
         if unmatched_labels:
-             st.warning(f"These labels were not found in the TGML file an were not replaced: {', '.join(unmatched_labels)}")
+            st.warning(f"These labels were not found in the TGML file an were not replaced: {', '.join(unmatched_labels)}")
  
         # Replace in TGML
         in_group = False
