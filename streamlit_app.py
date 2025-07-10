@@ -31,7 +31,7 @@ h1 {
 .sub {
     text-align: center;
     font-size: 16px;
-    color: pink;
+    color: #FF0090;
     margin-bottom: 30px;
 }
 .stButton>button {
@@ -42,7 +42,14 @@ h1 {
     padding: 10px 24px;
 }
 .stButton>button:hover {
-    background-color: white;
+    background-color: #16a085;
+}
+/* bright orange background for warnings */
+.stAlert {
+    background-color: #FFA500 !important;
+    color: black !important;
+    padding: 10px;
+    border-radius:5px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -109,15 +116,15 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
                 tgml_labels.add(text_name)
  
         # Identify labels from Excel NOT found in TGML
-        unmatched_labels = []
-        for lbl in all_labels:
-            matches = difflib.get_close_matches(lbl, tgml_labels, n=1, cutoff=0.85)
-            if not matches:
-                unmatched_labels.append(lbl)
+        unmatched_labels = sorted([lbl for lbl in all_labels if lbl not in tgml_labels])
+            
  
         # Show warning but continue
         if unmatched_labels:
-            st.warning(f"⚠️ These labels were NOT found in the TGML file and were not replaced:\n\n{', '.join(unmatched_labels)}")
+            st.markdown(
+                f"<div class='stAlert'> These labels were NOT found in the TGML file and were not replaced:\n\n{', '.join(unmatched_labels)}</div>",
+                unsafe_allow_html = True
+            )
  
         # Replace in TGML
         in_group = False
