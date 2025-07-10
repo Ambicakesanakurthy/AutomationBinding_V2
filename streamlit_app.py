@@ -42,7 +42,7 @@ h1 {
     padding: 10px 24px;
 }
 .stButton>button:hover {
-    background-color: #16a085;
+    background-color: white;
 }
 </style>
 """, unsafe_allow_html=True)
