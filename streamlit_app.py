@@ -115,7 +115,7 @@ if st.button("Submit and Download") and tgml_file and excel_file and sheet_name:
         # collect all text labels found in TGML
         tgml_labels = set()
         for elem in root.iter():
-            if elem.tag == "Text"
+            if elem.tag == "Text":
                 text.name = elem.attrib.get("Name", ""),strip().lower()
                 tgml_labels.add(text_name)
 
