@@ -31,7 +31,7 @@ h1 {
 .sub {
     text-align: center;
     font-size: 16px;
-    color: white;
+    color: pink;
     margin-bottom: 30px;
 }
 .stButton>button {
